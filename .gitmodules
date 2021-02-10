@@ -1,3 +1,6 @@
 [submodule "libraries"]
 	path = libraries
 	url = https://github.com/Lummetry/libraries.git
+[submodule "vapor_inference"]
+	path = vapor_inference
+	url = https://github.com/Lummetry/vapor_inference.git
