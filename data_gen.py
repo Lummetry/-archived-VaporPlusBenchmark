@@ -19,13 +19,13 @@ Copyright 2019 Lummetry.AI (Knowledge Investment Group SRL). All Rights Reserved
 @description:
 """
 
-from libraries import Logger
+import math
 
-if __name__ == '__main__':
-  log = Logger(
-    lib_name='BENCHMARK', 
-    config_file='config.txt',
-    TF_KERAS=False
-    )
-  
-  
+def data_generator(np_imgs, batch_size):
+  nr_batches = int(math.ceil(np_imgs.shape[0] / batch_size))
+  for i in range(nr_batches):
+    start = i * batch_size
+    stop = (i + 1) * batch_size if i < nr_batches - 1 else np_imgs.shape[0]
+    np_batch = np_imgs[start:stop]
+    yield np_batch
+  return
