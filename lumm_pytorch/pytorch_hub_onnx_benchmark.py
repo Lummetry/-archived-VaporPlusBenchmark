@@ -85,9 +85,8 @@ if __name__ == '__main__':
   
   dct_times = {}
   for repo_or_dir, model_name in MODELS:
-    if not model_name.startswith('yolov3'):
+    if model_name == 'yolov5':
       continue
-    
     model, ort_sess = load_onnx_model(log, model_name + '.onnx')
     preds, lst_time = benchmark_thhub_onnx_model(
       ort_sess=ort_sess,
@@ -102,9 +101,10 @@ if __name__ == '__main__':
     
   df = pd.DataFrame(dct_times)
   log.p('\n\n{}'.format(df))
+  platform, system = log.get_platform()
   log.save_dataframe(
     df=df,
-    fn='{}_{}.csv'.format('pytorch_applications_onnx', log.now_str()),
+    fn='{}_{}_{}.csv'.format(platform, 'pytorch_applications_onnx', log.now_str()),
     folder='output'
     )
   

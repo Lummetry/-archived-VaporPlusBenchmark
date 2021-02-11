@@ -6,7 +6,7 @@ Usage:
 
 import os
 import sys
-sys.path.append(os.path.join(os.getcwd(), 'third_party', 'pytorch', 'yolov3'))
+sys.path.append(os.path.join(os.getcwd(), 'third_party', 'pytorch', 'yolov5'))
 import time
 import argparse
 
@@ -22,6 +22,8 @@ from lumm_pytorch.utils import create_onnx_model
 
 DEVICE = th.device('cuda:0' if th.cuda.is_available() else 'cpu')
 
+
+
 if __name__ == '__main__':  
   log = Logger(
     lib_name='BENCHMARK', 
@@ -29,9 +31,10 @@ if __name__ == '__main__':
     TF_KERAS=False
     )
   
-  # weights = 'yolov3.pt'
-  # weights = 'yolov3-spp.pt'
-  weights = 'yolov3-tiny.pt'
+  # weights = 'yolov5s.pt'
+  # weights = 'yolov5m.pt'
+  # weights = 'yolov5l.pt'
+  weights = 'yolov5x.pt'
   img_size = [640, 640]
   batch_size = 1
   set_logging()
@@ -87,7 +90,8 @@ if __name__ == '__main__':
         input_shape=input_shape,
         file_name=f,
         use_dynamic_axes=True,
-        output_names=['classes', 'boxes'] if y is None else ['output']
+        output_names=['classes', 'boxes'] if y is None else ['output'],
+        opset_version=12
         )
       
       # Checks

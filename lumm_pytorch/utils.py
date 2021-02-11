@@ -59,6 +59,7 @@ def load_onnx_model(log, model_name, full_path=False):
 def create_onnx_model(log, model, input_shape, file_name, 
                       input_names=None, output_names=None,
                       use_dynamic_axes=False, use_dynamic_batch_size=False,
+                      opset_version=11
                       ):
   if not input_names:
     input_names = ['input']
@@ -90,6 +91,7 @@ def create_onnx_model(log, model, input_shape, file_name,
     onnx_path=save_path, 
     input_names=input_names, 
     output_names=output_names, 
-    dynamic_axes=dynamic_axes
+    dynamic_axes=dynamic_axes,
+    opset_version=opset_version
     )
   return

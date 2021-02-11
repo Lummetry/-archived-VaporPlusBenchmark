@@ -92,7 +92,7 @@ def to_onnx_model(log, repo_or_dir, model_name):
   return
 
 def load_onnx_model(log, model_name):
-  log.p('Loading onnx model...')
+  log.p('Loading onnx model {}...'.format(model_name))
   model, ort_sess = utils.load_onnx_model(
     log=log,
     model_name=model_name, 

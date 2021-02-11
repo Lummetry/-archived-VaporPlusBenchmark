@@ -109,9 +109,10 @@ if __name__ == '__main__':
   
   df = pd.DataFrame(dct_times)
   log.p('\n\n{}'.format(df))
+  platform, system = log.get_platform()
   log.save_dataframe(
     df=df,
-    fn='{}_{}.csv'.format('vapor_pb', log.now_str()),
+    fn='{}_{}_{}.csv'.format(platform, 'vapor_pb', log.now_str()),
     folder='output'
     )
   
