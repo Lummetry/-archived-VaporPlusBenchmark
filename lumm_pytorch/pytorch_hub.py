@@ -24,10 +24,7 @@ import torch.nn as nn
 import models
 from utils.activations import Hardswish, SiLU
 
-from time import time
 from lumm_pytorch import utils
-from libraries import Logger
-from data_gen import data_generator
 
 THH_YOLOV3 = ('ultralytics/yolov3', 'yolov3')
 THH_YOLOV3SPP = ('ultralytics/yolov3', 'yolov3_spp')
