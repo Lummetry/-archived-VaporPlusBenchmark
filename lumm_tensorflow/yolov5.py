@@ -21,7 +21,7 @@ Copyright 2019 Lummetry.AI (Knowledge Investment Group SRL). All Rights Reserved
 
 import os
 import sys
-sys.path.append(os.path.join(os.getcwd(), 'third-party', 'tensorflow', 'Yolov5_tf'))
+sys.path.append(os.path.join(os.getcwd(), 'third_party', 'tensorflow', 'Yolov5_tf'))
 
 from libraries import Logger
 from yolo3_one_file_to_detect_them_all import make_yolov3_model, WeightReader

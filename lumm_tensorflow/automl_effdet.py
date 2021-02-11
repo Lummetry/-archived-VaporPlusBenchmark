@@ -21,7 +21,7 @@ Copyright 2019 Lummetry.AI (Knowledge Investment Group SRL). All Rights Reserved
 
 """
 Generate pb:
-1. cd "D:/Projects/VaporPlusBenchmark/third-party/tensorflow/automl/efficientdet"
+1. cd "D:/Projects/VaporPlusBenchmark/third_party/tensorflow/automl/efficientdet"
 2. run:
 python model_inspect.py --runmode=saved_model --model_name=efficientdet-d0 --ckpt_path="C:/Users/ETA/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/checkpoints/efficientdet-d0" --saved_model_dir="C:/Users/ETA/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/savedmodeldir/efficientdet-d0"
 python model_inspect.py --runmode=saved_model --model_name=efficientdet-d1 --ckpt_path="C:/Users/ETA/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/checkpoints/efficientdet-d1" --saved_model_dir="C:/Users/ETA/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/savedmodeldir/efficientdet-d1"
@@ -35,9 +35,9 @@ python model_inspect.py --runmode=saved_model --model_name=efficientdet-d7 --ckp
 
 import os
 import sys
-sys.path.append(os.path.join(os.getcwd(), 'third-party', 'tensorflow', 'automl'))
-sys.path.append(os.path.join(os.getcwd(), 'third-party', 'tensorflow', 'automl', 'efficientdet'))
-sys.path.append(os.path.join(os.getcwd(), 'third-party', 'tensorflow', 'automl', 'efficientdet', 'keras'))
+sys.path.append(os.path.join(os.getcwd(), 'third_party', 'tensorflow', 'automl'))
+sys.path.append(os.path.join(os.getcwd(), 'third_party', 'tensorflow', 'automl', 'efficientdet'))
+sys.path.append(os.path.join(os.getcwd(), 'third_party', 'tensorflow', 'automl', 'efficientdet', 'keras'))
 
 import numpy as np
 from PIL import Image

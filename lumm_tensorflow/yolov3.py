@@ -25,7 +25,7 @@ This implementation is not optimized!!!!!
 
 import os
 import sys
-sys.path.append(os.path.join(os.getcwd(), 'third-party', 'tensorflow', 'keras_yolo3'))
+sys.path.append(os.path.join(os.getcwd(), 'third_party', 'tensorflow', 'keras_yolo3'))
 import numpy as np
 
 from libraries import Logger

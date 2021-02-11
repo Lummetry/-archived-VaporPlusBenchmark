@@ -23,7 +23,7 @@ import os
 import cv2
 import os
 import sys
-sys.path.append(os.path.join(os.getcwd(), 'third-party', 'pytorch', 'efficientdet'))
+sys.path.append(os.path.join(os.getcwd(), 'third_party', 'pytorch', 'efficientdet'))
 import pandas as pd
 
 import torch as th

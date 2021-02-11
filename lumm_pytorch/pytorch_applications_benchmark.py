@@ -1,7 +1,5 @@
 """
 Copyright 2019 Lummetry.AI (Knowledge Investment Group SRL). All Rights Reserved.
-
-
 * NOTICE:  All information contained herein is, and remains
 * the property of Knowledge Investment Group SRL.  
 * The intellectual and technical concepts contained
@@ -11,46 +9,38 @@ Copyright 2019 Lummetry.AI (Knowledge Investment Group SRL). All Rights Reserved
 * Dissemination of this information or reproduction of this material
 * is strictly forbidden unless prior written permission is obtained
 * from Knowledge Investment Group SRL.
-
-
 @copyright: Lummetry.AI
 @author: Lummetry.AI
 @project: 
 @description:
 """
-
 import os
 import cv2
+import torch as th
 import numpy as np
 import pandas as pd
-import tensorflow.compat.v1 as tf
-tf.disable_eager_execution()
-tf_runoptions = tf.RunOptions(report_tensor_allocations_upon_oom=True)
 
-from data_gen import data_generator
+
 from time import time
 from libraries import Logger
+from data_gen import data_generator
+from lumm_pytorch.pytorch_applications import MODELS, get_th_model
 
-from vapor_inference.graphs import YoloInferenceGraph, EfficientDet0InferenceGraph
+DEVICE = th.device('cuda:0' if th.cuda.is_available() else 'cpu')
 
-TF_YOLO = 'TF_YOLO'
-EFF_DET0 = 'EFF_DET0'
 
-def get_vapor_pb(log, graph_name):
-  path_config = 'vapor_inference/inference.txt'
-  if graph_name == TF_YOLO:
-    graph = YoloInferenceGraph(log=log, config_path=path_config)
-  elif graph_name == EFF_DET0:
-    graph = EfficientDet0InferenceGraph(log=log, config_path=path_config)
-  return graph
-
-def benchmark_vapor_graph(log, graph, np_imgs_bgr, batch_size, n_warmup, n_iters,
-                          as_rgb=False, resize=None):
+def benchmark_th_model(model, np_imgs_bgr, batch_size, n_warmup, n_iters,
+                       as_rgb=False, resize=None):
   def _predict(np_batch):
+    if resize:
+      np_batch = np.array([cv2.resize(x, resize) for x in np_batch])
     if as_rgb:
       np_batch = np_batch[:,:,:,::-1]
-    return graph.predict(np_batch)
-  
+    np_batch = np.transpose(np_batch, (0, 3, 1, 2)).astype('float32')
+    with th.no_grad():
+      th_x = th.from_numpy(np_batch).to(DEVICE)
+      preds = model(th_x).cpu().numpy()
+    return preds
   #warmup
   for i in range(n_warmup):
     log.p(' Warmup {}'.format(i))
@@ -71,6 +61,7 @@ def benchmark_vapor_graph(log, graph, np_imgs_bgr, batch_size, n_warmup, n_iters
   #endfor
   return preds, lst_time
 
+
 if __name__ == '__main__':
   log = Logger(
     lib_name='BENCHMARK', 
@@ -78,55 +69,36 @@ if __name__ == '__main__':
     TF_KERAS=False
     )
   
+  BATCH_SIZE = 1
   N_WARMUP = 1
   N_ITERS = 10
-  BATCH_SIZE = 1
-  
-  log.p('Tensorflow version: {}'.format(tf.__version__))
   
   path_images = os.path.join(log.get_data_subfolder('General'))
   lst_imgs = [os.path.join(path_images, x) for x in os.listdir(path_images)]
   lst_imgs = [cv2.imread(x) for x in lst_imgs]
   np_imgs = np.array(lst_imgs)
   
-  log.p('Benchmarking will be made on tensor: {}'.format(np_imgs.shape))
-  
   dct_times = {}
-  for model_name in [TF_YOLO, EFF_DET0]:
-    graph = get_vapor_pb(log, model_name)
+  for model_name in MODELS.keys():
+    model = get_th_model(model_name=model_name)
     log.p('Benchmarking {}'.format(model_name))
-    preds, lst_time = benchmark_vapor_graph(
-      log=log,
-      graph=graph, 
+    preds, lst_time = benchmark_th_model(
+      model=model, 
       np_imgs_bgr=np_imgs, 
       batch_size=BATCH_SIZE, 
       n_warmup=N_WARMUP, 
       n_iters=N_ITERS,
-      as_rgb=True
+      as_rgb=True,
+      resize=MODELS[model_name]
       )
     dct_times[model_name] = lst_time
   #endfor
-  
+    
   df = pd.DataFrame(dct_times)
   log.p('\n\n{}'.format(df))
   log.save_dataframe(
     df=df,
-    fn='{}_{}.csv'.format('vapor_pb', log.now_str()),
+    fn='{}_{}.csv'.format('pytorch_applications', log.now_str()),
     folder='output'
     )
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
   

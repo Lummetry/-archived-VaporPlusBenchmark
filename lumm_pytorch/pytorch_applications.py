@@ -14,22 +14,22 @@ Copyright 2019 Lummetry.AI (Knowledge Investment Group SRL). All Rights Reserved
 @project: 
 @description:
 """
+  
 import os
-import cv2
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 import torch as th
 import numpy as np
-import pandas as pd
 import torchvision.models as models
 
 from time import time
 from libraries import Logger
-from data_gen import data_generator
+from lumm_pytorch import utils
 
 MOBILENET_V2 = 'mobilenetv2'
 INCEPTION_V3 = 'inceptionv3'
 RESNET50    = 'resnet50'
 
-RESIZE = {
+MODELS = {
   MOBILENET_V2: (224, 224),
   INCEPTION_V3: (299, 299),
   RESNET50: (299, 299)
@@ -50,77 +50,60 @@ def get_th_model(model_name):
   model.eval()
   return model
 
-
-def benchmark_th_model(model, np_imgs_bgr, batch_size, n_warmup, n_iters,
-                       as_rgb=False, resize=None):
-  def _predict(np_batch):
-    if resize:
-      np_batch = np.array([cv2.resize(x, resize) for x in np_batch])
-    if as_rgb:
-      np_batch = np_batch[:,:,:,::-1]
-    np_batch = np.transpose(np_batch, (0, 3, 1, 2)).astype('float32')
-    with th.no_grad():
-      th_x = th.from_numpy(np_batch).to(DEVICE)
-      preds = model(th_x).cpu().numpy()
-    return preds
-  #warmup
-  for i in range(n_warmup):
-    log.p(' Warmup {}'.format(i))
-    gen = data_generator(np_imgs=np_imgs_bgr, batch_size=batch_size)
-    for np_batch in gen:
-      _predict(np_batch)
+def to_onnx_model(log, model_name):
+  assert model_name in MODELS, 'Model {} not configured'.format(model_name)
   
-  #iters
-  for i in range(n_iters):
-    log.p(' Iter {}'.format(i))
-    gen = data_generator(np_imgs=np_imgs_bgr, batch_size=batch_size)
-    lst_time = []
-    for np_batch in gen:
-      start = time()
-      preds = _predict(np_batch)
-      stop = time()
-      lst_time.append(stop - start)
-  #endfor
-  return preds, lst_time
+  log.p('Converting {} to onnx'.format(model_name))  
+  resize = MODELS[model_name]
+  height, width = resize
+  input_shape = (1, 3, height, width) #random number for batch_size. the batch_size will be made dynamic
+  
+  log.p('Getting model')
+  model = get_th_model(model_name)
+  log.p('Done', show_time=True)
+  
+  model.eval()
+  
+  log.p('Converting...')
+  onnx_model_name = model_name + '_fixed_{}'.format('x'.join(str(x) for x in resize)) + '.onnx'
+  utils.create_onnx_model(
+    log=log,
+    model=model,
+    input_shape=input_shape,
+    file_name=onnx_model_name,
+    use_dynamic_batch_size=True
+    )    
+  
+  log.p('Done', show_time=True)
+  return
 
+def load_onnx_model(log, model_name):
+  log.p('Loading onnx model...')
+  resize = MODELS[model_name]
+  height, width = resize
+  onnx_model_name = model_name + '_fixed_{}'.format('x'.join(str(x) for x in resize)) + '.onnx'
+  model, ort_sess = utils.load_onnx_model(
+    log=log,
+    model_name=onnx_model_name, 
+    full_path=False
+    )
+  log.p('Done', show_time=True)
+  return model, ort_sess
 
-if __name__ == '__main__':
+if __name__ == '__main__':  
   log = Logger(
     lib_name='BENCHMARK', 
-    config_file='config.txt',
+    config_file='config.txt', 
     TF_KERAS=False
     )
-  
-  BATCH_SIZE = 1
-  N_WARMUP = 1
-  N_ITERS = 10
-  
-  path_images = os.path.join(log.get_data_subfolder('General'))
-  lst_imgs = [os.path.join(path_images, x) for x in os.listdir(path_images)]
-  lst_imgs = [cv2.imread(x) for x in lst_imgs]
-  np_imgs = np.array(lst_imgs)
-  
-  dct_times = {}
-  for model_name in [MOBILENET_V2, INCEPTION_V3, RESNET50]:
-    model = get_th_model(model_name=model_name)
-    log.p('Benchmarking {}'.format(model_name))
-    preds, lst_time = benchmark_th_model(
-      model=model, 
-      np_imgs_bgr=np_imgs, 
-      batch_size=BATCH_SIZE, 
-      n_warmup=N_WARMUP, 
-      n_iters=N_ITERS,
-      as_rgb=True,
-      resize=RESIZE[model_name]
-      )
-    dct_times[model_name] = lst_time
-  #endfor
     
-  df = pd.DataFrame(dct_times)
-  log.p('\n\n{}'.format(df))
-  log.save_dataframe(
-    df=df,
-    fn='{}_{}.csv'.format('pytorch_applications', log.now_str()),
-    folder='output'
-    )
+
+  
+  
+  
+  
+  
+  
+  
+  
   
