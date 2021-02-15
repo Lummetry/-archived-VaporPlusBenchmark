@@ -25,11 +25,11 @@ import tensorflow.compat.v1 as tf
 tf.disable_eager_execution()
 
 from libraries import Logger
-from data import read_images, save_benchmark_results
+from data import get_nr_batches, read_images, save_benchmark_results
 from lumm_tensorflow.automl_effdet import get_effdet_pb
 from benchmark_methods import benchmark_tf_graph
 
-def benchmark_automl_effdet_onnx(log, np_imgs_bgr, batch_size, n_warmup, n_iters):
+def benchmark_automl_effdet_pb(log, np_imgs_bgr, batch_size, n_warmup, n_iters):
   log.p('Benchmarking AutoMLEffdetPB on image tensor: {}'.format(np_imgs_bgr.shape))
   dct_times = {}
   for i in range(8):
@@ -50,9 +50,12 @@ def benchmark_automl_effdet_onnx(log, np_imgs_bgr, batch_size, n_warmup, n_iters
         as_rgb=True
         )
       dct_times[model_name] = lst_time
+      del graph
+      del sess
+      log.clear_gpu_memory()
     except Exception as e:
       log.p('Exception on {}: {}'.format(model_name, str(e)))
-      dct_times[model_name] = [None] * np_imgs_bgr.shape[0]
+      dct_times[model_name] = [None] * get_nr_batches(np_imgs_bgr, batch_size)
   #endfor
   
   save_benchmark_results(
@@ -76,7 +79,7 @@ if __name__ == '__main__':
   N_IT = 1
   
   np_imgs_bgr = read_images(log=log, folder=ct.DATA_FOLDER_GENERAL)
-  benchmark_automl_effdet_onnx(
+  benchmark_automl_effdet_pb(
     log=log,
     np_imgs_bgr=np_imgs_bgr, 
     batch_size=BS, 

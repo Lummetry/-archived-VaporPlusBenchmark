@@ -75,15 +75,11 @@ def get_th_effdet_model(model_name):
   ).eval().to(DEVICE)
   return model
 
+  
+  
+  
+  
 
-  
-  
-  
-  
-  
-  
-  
-  
   
   
   

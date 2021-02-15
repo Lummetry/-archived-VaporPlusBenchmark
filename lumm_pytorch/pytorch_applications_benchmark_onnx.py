@@ -17,7 +17,7 @@ Copyright 2019 Lummetry.AI (Knowledge Investment Group SRL). All Rights Reserved
 
 import constants as ct
 
-from data import read_images, save_benchmark_results
+from data import get_nr_batches, read_images, save_benchmark_results
 from libraries import Logger
 from lumm_pytorch.pytorch_applications import to_onnx_model, load_onnx_model, MODELS
 from benchmark_methods import benchmark_onnx_model
@@ -44,9 +44,12 @@ def benchmark_pytorch_models_onnx(log, np_imgs_bgr, batch_size, n_warmup, n_iter
         to_nchw=True
         )
       dct_times[model_name] = lst_time
+      del model
+      del ort_sess
+      log.clear_gpu_memory()
     except Exception as e:
       log.p('Exception on {}: {}'.format(model_name, str(e)))
-      dct_times[model_name] = [None] * np_imgs_bgr.shape[0]
+      dct_times[model_name] = [None] * get_nr_batches(np_imgs_bgr, batch_size)
   #endfor
     
   save_benchmark_results(

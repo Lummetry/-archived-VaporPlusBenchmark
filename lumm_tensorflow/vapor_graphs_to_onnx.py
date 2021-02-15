@@ -29,9 +29,6 @@ Prolems on conversion with EFFDET0:
 EFFDET0 conversion errs: UnicodeDecodeError: 'utf-8' codec can't decode byte 0xff in position 0: invalid start byte
 """
 
-import os
-import cv2
-import numpy as np
 import tensorflow as tf
 
 from libraries import Logger

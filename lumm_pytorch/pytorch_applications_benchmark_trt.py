@@ -21,7 +21,7 @@ import constants as ct
 
 from libraries import Logger
 from torch2trt import TRTModule
-from data import read_images, save_benchmark_results
+from data import get_nr_batches, read_images, save_benchmark_results
 from benchmark_methods import benchmark_pytorch_model
 from lumm_pytorch.pytorch_applications import MODELS
 
@@ -46,9 +46,11 @@ def benchmark_pytorch_models_trt(log, np_imgs_bgr, batch_size, n_warmup, n_iters
         to_nchw=True
         )
       dct_times[model_name] = lst_time
+      del model_trt
+      log.clear_gpu_memory()
     except Exception as e:
       log.p('Exception on {}: {}'.format(model_name, str(e)))
-      dct_times[model_name] = [None] * np_imgs_bgr.shape[0]
+      dct_times[model_name] = [None] * get_nr_batches(np_imgs_bgr, batch_size)
   #endfor
     
   save_benchmark_results(

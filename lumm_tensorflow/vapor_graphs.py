@@ -33,15 +33,32 @@ GRAPHS = {
   EFF_DET0: (574, 1020)
   }
 
-def get_vapor_graph(log, graph_name):
+BATCH_SIZES = list([1] + list(range(2, 31, 2)))
+
+def get_vapor_graph(log, graph_name, batch_size=1):
   path_config = 'vapor_inference/inference.txt'
   if graph_name == TF_YOLO:
     graph = YoloInferenceGraph(log=log, config_path=path_config)
   elif graph_name == EFF_DET0:
-    graph = EfficientDet0InferenceGraph(log=log, config_path=path_config)
+    cfg = log.load_json('vapor_inference/inference.txt')
+    cfg_effdet = cfg['EFF_DET0']
+    path = cfg_effdet['MODELS_PATH']
+    path_pb = path.format(batch_size)
+    cfg_effdet['GRAPH'] = path_pb
+    cfg_effdet['BATCH_SIZE'] = batch_size
+    graph = EfficientDet0InferenceGraph(log=log, config_graph=cfg_effdet)
   return graph
 
-
+if __name__ == '__main__':
+  from libraries import Logger
+  log = Logger(
+    lib_name='BENCHMARK', 
+    config_file='config.txt',
+    TF_KERAS=False
+    )
+  for batch_size in BATCH_SIZES:
+    get_vapor_graph(log=log, graph_name=EFF_DET0, batch_size=batch_size)
+    
   
   
   

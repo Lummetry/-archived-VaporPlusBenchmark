@@ -22,7 +22,6 @@ Could not convert to ONNX: RuntimeError: Sizes of tensors must match except in d
 1.1.4 PYTORCH_HUB:
 RuntimeError: Sizes of tensors must match except in dimension 2. Got 135 and 136 (The offending index is 0)
 
-
 1.2 TRT
 1.2.1 Keras applications
 Could not convert any default keras applycations models into TRT with tensorflow-gpu==2.1.0
@@ -33,7 +32,8 @@ The conversion was made with native automl python conversion script into UBUNTU 
 Could not convert to TRT: RuntimeError: Sizes of tensors must match except in dimension 2. Got 135 and 136 (The offending index is 0)
 1.2.4 PYTORCH_HUB - YOLOS v3/v5
 RuntimeError: Sizes of tensors must match except in dimension 2. Got 135 and 136 (The offending index is 0)
-
+1.2.5 VaporGraphs
+Conversion 'freezes', maybe needs more time (?). Needs investigation.
 
 ENVIRONMENTS USED:
 1. tf23py36:
@@ -55,6 +55,7 @@ conda install pytorch torchvision cudatoolkit=10.1 -c pytorch
 conda install -c conda-forge onnx
 pip install onnxruntime-gpu
 conda install -c conda-forge timm
+import onnxruntime
 
 BENCHMARKS:
 PYTORCH
@@ -62,6 +63,16 @@ PYTORCH_ONNX
 PYTORCH_EFFDET
 PYTORCH_HUB
 PYTORCH_HUB_ONNX
+AUTOML_EFFDET_PB
+AUTOML_EFFDET_TRT
+KERAS_ONNX
+KERAS_PB
+KERAS_TRT
+KERAS
+VAPOR_GRAPHS_PB
+VAPOR_GRAPHS
+VAPOR_GRAPHS_ONNX
+VAPOR_GRAPHS_TRT
 
 3. tf24
 conda create -n tf24 anaconda

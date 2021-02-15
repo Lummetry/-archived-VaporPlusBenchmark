@@ -15,9 +15,10 @@ Copyright 2019 Lummetry.AI (Knowledge Investment Group SRL). All Rights Reserved
 @description:
 """
 import constants as ct
+import torch as th
 
 from libraries import Logger
-from data import read_images, save_benchmark_results
+from data import get_nr_batches, read_images, save_benchmark_results
 from lumm_pytorch.pytorch_hub import MODELS, get_pytorchhub_model
 from benchmark_methods import benchmark_torch_hub_model
 
@@ -39,9 +40,11 @@ def benchmark_pytorch_hub_models(log, np_imgs_bgr, batch_size, n_warmup, n_iters
         to_nchw=True
         )
       dct_times[model_name] = lst_time
+      del model
+      log.clear_gpu_memory()
     except Exception as e:
       log.p('Exception on {}: {}'.format(model_name, str(e)))
-      dct_times[model_name] = [None] * np_imgs_bgr.shape[0]
+      dct_times[model_name] = [None] * get_nr_batches(np_imgs_bgr, batch_size)
   #endfor
     
   save_benchmark_results(

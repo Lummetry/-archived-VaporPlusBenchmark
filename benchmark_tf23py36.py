@@ -1,7 +1,5 @@
 """
 Copyright 2019 Lummetry.AI (Knowledge Investment Group SRL). All Rights Reserved.
-
-
 * NOTICE:  All information contained herein is, and remains
 * the property of Knowledge Investment Group SRL.  
 * The intellectual and technical concepts contained
@@ -11,19 +9,25 @@ Copyright 2019 Lummetry.AI (Knowledge Investment Group SRL). All Rights Reserved
 * Dissemination of this information or reproduction of this material
 * is strictly forbidden unless prior written permission is obtained
 * from Knowledge Investment Group SRL.
-
-
 @copyright: Lummetry.AI
 @author: Lummetry.AI
 @project: 
 @description:
 """
-
-import os
+import constants as ct
 
 from libraries import Logger
-from lumm_tensorflow.utils import graph_to_trt
-from lumm_tensorflow.vapor_graphs import get_vapor_graph, GRAPHS, BATCH_SIZES
+from data import read_images
+
+
+from lumm_pytorch import benchmark_pytorch_models_trt
+
+BENCHMARKS_TF23 = {
+    ct.PYTORCH_TRT:       benchmark_pytorch_models_trt,
+  }
+
+# BATCH_SIZES = list([1] + list(range(2, 31, 2)))
+BATCH_SIZES = [1]
 
 if __name__ == '__main__':
   log = Logger(
@@ -32,33 +36,16 @@ if __name__ == '__main__':
     TF_KERAS=False
     )
   
-  dct_times = {}
-  for graph_name in GRAPHS:
-    lst = [1] if graph_name == 'TF_YOLO' else BATCH_SIZES
-    for batch_size in lst:
-      vapor_graph = get_vapor_graph(log, graph_name)
-      path = os.path.join(log.get_models_folder(), vapor_graph.config_graph['GRAPH'])
-      graph_to_trt(
-        log=log,
-        graph_name=path,
-        folder=None,
-        input_name=vapor_graph.get_input_names(),
-        output_name=vapor_graph.get_output_names()
-        )
-    #endfor
-  #endfor
-    
+  N_WP = 1
+  N_IT = 2
   
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+  np_imgs_bgr = read_images(log=log, folder=ct.DATA_FOLDER_GENERAL)
+  for bs in BATCH_SIZES:
+    for key, benchmark_method in BENCHMARKS_TF23.items():
+      benchmark_method(
+        log=log,
+        np_imgs_bgr=np_imgs_bgr, 
+        batch_size=bs, 
+        n_warmup=N_WP, 
+        n_iters=N_IT
+        )

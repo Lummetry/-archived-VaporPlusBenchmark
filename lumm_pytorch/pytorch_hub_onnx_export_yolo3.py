@@ -29,7 +29,7 @@ if __name__ == '__main__':
     TF_KERAS=False
     )
   
-  # weights = 'yolov3.pt'
+  weights = 'yolov3.pt'
   # weights = 'yolov3-spp.pt'
   # weights = 'yolov3-tiny.pt'
   img_size = [640, 640]

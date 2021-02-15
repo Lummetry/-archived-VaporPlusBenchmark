@@ -20,11 +20,10 @@ Copyright 2019 Lummetry.AI (Knowledge Investment Group SRL). All Rights Reserved
 """
 
 import constants as ct
-import tensorflow as tf
 
 from libraries import Logger
 from benchmark_methods import benchmark_keras_model
-from data import read_images, save_benchmark_results
+from data import get_nr_batches, read_images, save_benchmark_results
 from lumm_tensorflow.automl_effdet import get_effdet_keras
 
 """
@@ -44,9 +43,7 @@ def benchmark_automl_effdet_keras(log, np_imgs_bgr, batch_size, n_warmup, n_iter
   dct_times = {}
   for i in range(8):
     model_name = 'efficientdet-d{}'.format(i)
-    try:
-      #you need to clear session in order to load every single model. at list for tf2.4.0
-      tf.keras.backend.clear_session() 
+    try:      
       model = get_effdet_keras(log, 'efficientdet-d{}'.format(i))
       log.log_keras_model(model)
       preds, lst_time = benchmark_keras_model(
@@ -59,9 +56,11 @@ def benchmark_automl_effdet_keras(log, np_imgs_bgr, batch_size, n_warmup, n_iter
         as_rgb=True
         )
       dct_times[model_name] = lst_time
+      del model
+      log.clear_gpu_memory()
     except Exception as e:
       log.p('Exception on {}: {}'.format(model_name, str(e)))
-      dct_times[model_name] = [None] * np_imgs_bgr.shape[0]
+      dct_times[model_name] = [None] * get_nr_batches(np_imgs_bgr, batch_size)
   #endfor
   
   save_benchmark_results(

@@ -20,7 +20,7 @@ from libraries import Logger
 from lumm_tensorflow.keras import MODELS
 from lumm_tensorflow.utils import get_trt_graph
 from benchmark_methods import benchmark_tf_graph
-from data import read_images, save_benchmark_results
+from data import get_nr_batches, read_images, save_benchmark_results
 
 def benchmark_keras_models_trt(log, np_imgs_bgr, batch_size, n_warmup, n_iters):
   log.p('Benchmarking KerasModelTRT {} on image tensor: {}'.format(','.join(MODELS.keys()), np_imgs_bgr.shape))
@@ -28,7 +28,7 @@ def benchmark_keras_models_trt(log, np_imgs_bgr, batch_size, n_warmup, n_iters):
   dct_times = {}
   for model_name, resize in MODELS.items():
     try:
-      model, sess, tf_inp, tf_out = get_trt_graph(log, model_name + '.pb')
+      graph, sess, tf_inp, tf_out = get_trt_graph(log, model_name + '.pb')
       log.p('Benchmarking {}'.format(model_name))
       preds, lst_time = benchmark_tf_graph(
         log=log, 
@@ -43,9 +43,12 @@ def benchmark_keras_models_trt(log, np_imgs_bgr, batch_size, n_warmup, n_iters):
         resize=resize
         )
       dct_times[model_name] = lst_time
+      del graph
+      del sess
+      log.clear_gpu_memory()
     except Exception as e:
       log.p('Exception on {}: {}'.format(model_name, str(e)))
-      dct_times[model_name] = [None] * np_imgs_bgr.shape[0]
+      dct_times[model_name] = [None] * get_nr_batches(np_imgs_bgr, batch_size)
   #endfor
   
   save_benchmark_results(

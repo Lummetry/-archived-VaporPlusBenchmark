@@ -20,7 +20,7 @@ from libraries import Logger
 from lumm_tensorflow.keras import MODELS
 from lumm_tensorflow.utils import load_onnx_model
 from benchmark_methods import benchmark_onnx_model
-from data import read_images, save_benchmark_results
+from data import get_nr_batches, read_images, save_benchmark_results
 
 def benchmark_keras_models_onnx(log, np_imgs_bgr, batch_size, n_warmup, n_iters):
   log.p('Benchmarking KerasModelsONNX {} on image tensor: {}'.format(','.join(MODELS.keys()), np_imgs_bgr.shape))
@@ -41,9 +41,12 @@ def benchmark_keras_models_onnx(log, np_imgs_bgr, batch_size, n_warmup, n_iters)
         resize=resize
         )
       dct_times[model_name] = lst_time
+      del model
+      del ort_sess
+      log.clear_gpu_memory()
     except Exception as e:
       log.p('Exception on {}: {}'.format(model_name, str(e)))
-      dct_times[model_name] = [None] * np_imgs_bgr.shape[0]
+      dct_times[model_name] = [None] * get_nr_batches(np_imgs_bgr, batch_size)
   #endfor
   
   save_benchmark_results(

@@ -26,7 +26,7 @@ tf_runoptions = tf.RunOptions(report_tensor_allocations_upon_oom=True)
 
 from libraries import Logger
 from benchmark_methods import benchmark_vapor_graph
-from data import read_images, save_benchmark_results
+from data import get_nr_batches, read_images, save_benchmark_results
 from lumm_tensorflow.vapor_graphs import GRAPHS, get_vapor_graph
 
 """
@@ -38,7 +38,7 @@ def benchmark_vapor_graphs(log, np_imgs_bgr, batch_size, n_warmup, n_iters):
   dct_times = {}
   for model_name, _ in GRAPHS.items():
     try:
-      graph = get_vapor_graph(log, model_name)
+      graph = get_vapor_graph(log, model_name, batch_size)
       log.p('Benchmarking {}'.format(model_name))
       lst_preds, lst_time = benchmark_vapor_graph(
         log=log,
@@ -50,9 +50,11 @@ def benchmark_vapor_graphs(log, np_imgs_bgr, batch_size, n_warmup, n_iters):
         as_rgb=True
         )
       dct_times[model_name] = lst_time
+      del graph
+      log.clear_gpu_memory()
     except Exception as e:
       log.p('Exception on {}: {}'.format(model_name, str(e)))
-      dct_times[model_name] = [None] * np_imgs_bgr.shape[0]
+      dct_times[model_name] = [None] * get_nr_batches(np_imgs_bgr, batch_size)
   #endfor
   
   save_benchmark_results(

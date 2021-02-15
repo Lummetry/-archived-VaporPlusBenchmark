@@ -55,3 +55,4 @@ def load_onnx_model(log, model_name):
     )
   log.p('Done', show_time=True)
   return model, ort_sess
+

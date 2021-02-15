@@ -31,7 +31,7 @@ def predict(predict_method, data_gen):
 
 #TENSORFLOW
 def benchmark_keras_model(log, n_warmup, n_iters, model, np_imgs_bgr, batch_size, 
-                         as_rgb=False,  resize=None):
+                          as_rgb=False,  resize=None):
   def _predict_method(np_batch):
     np_batch = prepare_data(
       log=log,

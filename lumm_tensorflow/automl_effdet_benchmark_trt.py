@@ -24,7 +24,7 @@ import constants as ct
 
 from libraries import Logger
 from lumm_tensorflow.automl_effdet import get_effdet_pb
-from data import read_images, save_benchmark_results
+from data import get_nr_batches, read_images, save_benchmark_results
 from benchmark_methods import benchmark_tf_graph
 
 def benchmark_automl_effdet_trt(log, np_imgs_bgr, batch_size, n_warmup, n_iters):
@@ -48,9 +48,12 @@ def benchmark_automl_effdet_trt(log, np_imgs_bgr, batch_size, n_warmup, n_iters)
         as_rgb=True
         )
       dct_times[model_name] = lst_time
+      del graph
+      del sess
+      log.clear_gpu_memory()
     except Exception as e:
       log.p('Exception on {}: {}'.format(model_name, str(e)))
-      dct_times[model_name] = [None] * np_imgs_bgr.shape[0]
+      dct_times[model_name] = [None] * get_nr_batches(np_imgs_bgr, batch_size)
   #endfor
     
   save_benchmark_results(

@@ -26,3 +26,4 @@ PYTORCH_EFFDET = 'pytorch_effdet'
 
 PYTORCH_HUB = 'pytorch_hub'
 PYTORCH_HUB_ONNX = 'pytorch_hub_onnx'
+

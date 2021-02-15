@@ -25,8 +25,8 @@ sys.path.append(os.path.join(os.getcwd(), 'third_party', 'pytorch', 'efficientde
 import torch as th
 import constants as ct
 
-from data import read_images, save_benchmark_results
 from libraries import Logger
+from data import get_nr_batches, read_images, save_benchmark_results
 from benchmark_methods import benchmark_pytorch_effdet_model
 from lumm_pytorch.pytorch_effdet import THH_EFFDET_MODEL_LIST, get_th_effdet_model
 
@@ -52,9 +52,11 @@ def benchmark_pytorch_effdet_models(log, np_imgs_bgr, batch_size, n_warmup, n_it
         to_nchw=True
         )
       dct_times[model_name] = lst_time
+      del model
+      log.clear_gpu_memory()
     except Exception as e:
       log.p('Exception on {}: {}'.format(model_name, str(e)))
-      dct_times[model_name] = [None] * np_imgs_bgr.shape[0]
+      dct_times[model_name] = [None] * get_nr_batches(np_imgs_bgr, batch_size)
   #endfor
   
   save_benchmark_results(
@@ -70,7 +72,7 @@ if __name__ == '__main__':
   log = Logger(lib_name='VPBMRK', config_file='config.txt', max_lines=1000)
   log.set_nice_prints(df_precision=5)
 
-  BS = 1
+  BS = 2
   N_WP = 1
   N_IT = 1
   

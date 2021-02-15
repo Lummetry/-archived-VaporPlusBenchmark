@@ -15,9 +15,10 @@ Copyright 2019 Lummetry.AI (Knowledge Investment Group SRL). All Rights Reserved
 @description:
 """
 import constants as ct
+import tensorflow as tf
 
 from libraries import Logger
-from data import read_images, save_benchmark_results
+from data import get_nr_batches, read_images, save_benchmark_results
 from lumm_tensorflow.vapor_graphs import GRAPHS, get_vapor_graph
 from lumm_tensorflow.utils import get_trt_graph
 from benchmark_methods import benchmark_tf_graph
@@ -27,7 +28,7 @@ def benchmark_vapor_graphs_trt(log, np_imgs_bgr, batch_size, n_warmup, n_iters):
   dct_times = {}
   for graph_name, resize in GRAPHS.items():
     try:
-      vg = get_vapor_graph(log, graph_name)
+      vg = get_vapor_graph(log, graph_name, batch_size)
       model, sess, tf_inp, tf_out = get_trt_graph(log, vg.config_graph['GRAPH'])
       log.p('Benchmarking {}'.format(graph_name))
       preds, lst_time = benchmark_tf_graph(
@@ -43,9 +44,12 @@ def benchmark_vapor_graphs_trt(log, np_imgs_bgr, batch_size, n_warmup, n_iters):
         resize=resize
         )
       dct_times[graph_name] = lst_time
+      del model
+      del sess
+      log.clear_gpu_memory()
     except Exception as e:
       log.p('Exception on {}: {}'.format(graph_name, str(e)))
-      dct_times[graph_name] = [None] * np_imgs_bgr.shape[0]
+      dct_times[graph_name] = [None] * get_nr_batches(np_imgs_bgr, batch_size)
   #endfor
   
   save_benchmark_results(

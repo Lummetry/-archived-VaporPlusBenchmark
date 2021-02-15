@@ -20,10 +20,11 @@ Copyright 2019 Lummetry.AI (Knowledge Investment Group SRL). All Rights Reserved
 """
 
 import constants as ct
+import tensorflow as tf
 
 from libraries import Logger
 from benchmark_methods import benchmark_tf_graph
-from data import read_images, save_benchmark_results
+from data import get_nr_batches, read_images, save_benchmark_results
 from lumm_tensorflow.vapor_graphs import GRAPHS, get_vapor_graph
 
 """
@@ -35,7 +36,7 @@ def benchmark_vapor_graphs_pb(log, np_imgs_bgr, batch_size, n_warmup, n_iters):
   dct_times = {}
   for model_name, resize in GRAPHS.items():
     try:
-      graph = get_vapor_graph(log, model_name)
+      graph = get_vapor_graph(log, model_name, batch_size)
       sess = graph.sess
       tf_inp = graph.get_input_tensors()
       tf_out = graph.get_output_tensors()
@@ -53,9 +54,12 @@ def benchmark_vapor_graphs_pb(log, np_imgs_bgr, batch_size, n_warmup, n_iters):
         resize=resize
         )
       dct_times[model_name] = lst_time
+      del graph
+      del sess
+      log.clear_gpu_memory()
     except Exception as e:
       log.p('Exception on {}: {}'.format(model_name, str(e)))
-      dct_times[model_name] = [None] * np_imgs_bgr.shape[0]
+      dct_times[model_name] = [None] * get_nr_batches(np_imgs_bgr, batch_size)
   #endfor
   
   save_benchmark_results(
