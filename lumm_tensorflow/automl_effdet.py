@@ -20,37 +20,47 @@ Copyright 2019 Lummetry.AI (Knowledge Investment Group SRL). All Rights Reserved
 """
 
 """
-Generate pb:
+Generate pb WINDOWS:
 1. cd "D:/Projects/VaporPlusBenchmark/third_party/tensorflow/automl/efficientdet"
 2. run:
-python model_inspect.py --runmode=saved_model --model_name=efficientdet-d0 --ckpt_path="C:/Users/ETA/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/checkpoints/efficientdet-d0" --saved_model_dir="C:/Users/ETA/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/savedmodeldir/efficientdet-d0"
-python model_inspect.py --runmode=saved_model --model_name=efficientdet-d1 --ckpt_path="C:/Users/ETA/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/checkpoints/efficientdet-d1" --saved_model_dir="C:/Users/ETA/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/savedmodeldir/efficientdet-d1"
-python model_inspect.py --runmode=saved_model --model_name=efficientdet-d2 --ckpt_path="C:/Users/ETA/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/checkpoints/efficientdet-d2" --saved_model_dir="C:/Users/ETA/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/savedmodeldir/efficientdet-d2"
-python model_inspect.py --runmode=saved_model --model_name=efficientdet-d3 --ckpt_path="C:/Users/ETA/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/checkpoints/efficientdet-d3" --saved_model_dir="C:/Users/ETA/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/savedmodeldir/efficientdet-d3"
-python model_inspect.py --runmode=saved_model --model_name=efficientdet-d4 --ckpt_path="C:/Users/ETA/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/checkpoints/efficientdet-d4" --saved_model_dir="C:/Users/ETA/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/savedmodeldir/efficientdet-d4"
-python model_inspect.py --runmode=saved_model --model_name=efficientdet-d5 --ckpt_path="C:/Users/ETA/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/checkpoints/efficientdet-d5" --saved_model_dir="C:/Users/ETA/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/savedmodeldir/efficientdet-d5"
-python model_inspect.py --runmode=saved_model --model_name=efficientdet-d6 --ckpt_path="C:/Users/ETA/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/checkpoints/efficientdet-d6" --saved_model_dir="C:/Users/ETA/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/savedmodeldir/efficientdet-d6"
-python model_inspect.py --runmode=saved_model --model_name=efficientdet-d7 --ckpt_path="C:/Users/ETA/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/checkpoints/efficientdet-d7" --saved_model_dir="C:/Users/ETA/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/savedmodeldir/efficientdet-d7"
+python model_inspect.py --runmode=saved_model --model_name=efficientdet-d0 --ckpt_path="C:/Users/ETA/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/checkpoints/efficientdet-d0" --saved_model_dir="C:/Users/ETA/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/savedmodeldir/efficientdet-d0" --tensorrt=FP32
+python model_inspect.py --runmode=saved_model --model_name=efficientdet-d1 --ckpt_path="C:/Users/ETA/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/checkpoints/efficientdet-d1" --saved_model_dir="C:/Users/ETA/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/savedmodeldir/efficientdet-d1" --tensorrt=FP32
+python model_inspect.py --runmode=saved_model --model_name=efficientdet-d2 --ckpt_path="C:/Users/ETA/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/checkpoints/efficientdet-d2" --saved_model_dir="C:/Users/ETA/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/savedmodeldir/efficientdet-d2" --tensorrt=FP32
+python model_inspect.py --runmode=saved_model --model_name=efficientdet-d3 --ckpt_path="C:/Users/ETA/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/checkpoints/efficientdet-d3" --saved_model_dir="C:/Users/ETA/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/savedmodeldir/efficientdet-d3" --tensorrt=FP32
+python model_inspect.py --runmode=saved_model --model_name=efficientdet-d4 --ckpt_path="C:/Users/ETA/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/checkpoints/efficientdet-d4" --saved_model_dir="C:/Users/ETA/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/savedmodeldir/efficientdet-d4" --tensorrt=FP32
+python model_inspect.py --runmode=saved_model --model_name=efficientdet-d5 --ckpt_path="C:/Users/ETA/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/checkpoints/efficientdet-d5" --saved_model_dir="C:/Users/ETA/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/savedmodeldir/efficientdet-d5" --tensorrt=FP32
+python model_inspect.py --runmode=saved_model --model_name=efficientdet-d6 --ckpt_path="C:/Users/ETA/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/checkpoints/efficientdet-d6" --saved_model_dir="C:/Users/ETA/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/savedmodeldir/efficientdet-d6" --tensorrt=FP32
+python model_inspect.py --runmode=saved_model --model_name=efficientdet-d7 --ckpt_path="C:/Users/ETA/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/checkpoints/efficientdet-d7" --saved_model_dir="C:/Users/ETA/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/savedmodeldir/efficientdet-d7" --tensorrt=FP32
 """
 
+"""
+Generate pb LINUX:
+1. cd "/home/eta/Developer/Projects/VaporPlusBenchmark/third_party/tensorflow/automl/efficientdet"
+2. run:
+python model_inspect.py --runmode=saved_model --model_name=efficientdet-d0 --ckpt_path="/home/eta/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/checkpoints/efficientdet-d0" --saved_model_dir="/home/eta/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/savedmodeldir/efficientdet-d0" --tensorrt=FP32
+python model_inspect.py --runmode=saved_model --model_name=efficientdet-d1 --ckpt_path="/home/eta/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/checkpoints/efficientdet-d1" --saved_model_dir="/home/eta/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/savedmodeldir/efficientdet-d1" --tensorrt=FP32
+python model_inspect.py --runmode=saved_model --model_name=efficientdet-d2 --ckpt_path="/home/eta/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/checkpoints/efficientdet-d2" --saved_model_dir="/home/eta/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/savedmodeldir/efficientdet-d2" --tensorrt=FP32
+python model_inspect.py --runmode=saved_model --model_name=efficientdet-d3 --ckpt_path="/home/eta/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/checkpoints/efficientdet-d3" --saved_model_dir="/home/eta/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/savedmodeldir/efficientdet-d3" --tensorrt=FP32
+python model_inspect.py --runmode=saved_model --model_name=efficientdet-d4 --ckpt_path="/home/eta/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/checkpoints/efficientdet-d4" --saved_model_dir="/home/eta/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/savedmodeldir/efficientdet-d4" --tensorrt=FP32
+python model_inspect.py --runmode=saved_model --model_name=efficientdet-d5 --ckpt_path="/home/eta/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/checkpoints/efficientdet-d5" --saved_model_dir="/home/eta/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/savedmodeldir/efficientdet-d5" --tensorrt=FP32
+python model_inspect.py --runmode=saved_model --model_name=efficientdet-d6 --ckpt_path="/home/eta/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/checkpoints/efficientdet-d6" --saved_model_dir="/home/eta/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/savedmodeldir/efficientdet-d6" --tensorrt=FP32
+python model_inspect.py --runmode=saved_model --model_name=efficientdet-d7 --ckpt_path="/home/eta/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/checkpoints/efficientdet-d7" --saved_model_dir="/home/eta/Lummetry.AI Dropbox/DATA/_vapor_data/_benchmarks/_models/automl_effdet/savedmodeldir/efficientdet-d7" --tensorrt=FP32
+"""
 import os
-import sys
-sys.path.append(os.path.join(os.getcwd(), 'third_party', 'tensorflow', 'automl'))
-sys.path.append(os.path.join(os.getcwd(), 'third_party', 'tensorflow', 'automl', 'efficientdet'))
-sys.path.append(os.path.join(os.getcwd(), 'third_party', 'tensorflow', 'automl', 'efficientdet', 'keras'))
+import tensorflow as tf
 
-import numpy as np
-from PIL import Image
-import tensorflow.compat.v1 as tf
-
-import hparams_config
-import inference
-from keras import efficientdet_keras
 from libraries import Logger
 
 #this method was build using automl/efficientdet/keras/infer.py
 
 def get_effdet_keras(log, model_name):
+  import sys
+  sys.path.append(os.path.join(os.getcwd(), 'third_party', 'tensorflow', 'automl'))
+  sys.path.append(os.path.join(os.getcwd(), 'third_party', 'tensorflow', 'automl', 'efficientdet'))
+  sys.path.append(os.path.join(os.getcwd(), 'third_party', 'tensorflow', 'automl', 'efficientdet', 'keras'))
+  import hparams_config
+  from keras import efficientdet_keras
+  
   DEBUG = False
   MODEL_NAME = model_name
   MODEL_CKPT = os.path.join(log.get_models_folder(), 'automl_effdet/checkpoints', MODEL_NAME)
@@ -82,11 +92,15 @@ def get_effdet_keras(log, model_name):
   return model
 
 
-def get_effdet_pb(log, model_name):
-  PATH_PB = os.path.join(log.get_models_folder(), 'automl_effdet/savedmodeldir')
-  path_pb = os.path.join(PATH_PB, model_name, '{}_frozen.pb'.format(model_name))
+def get_effdet_pb(log, model_name, is_saved_model=False):
+  import tensorflow.compat.v1 as tf
+  PATH_PB = os.path.join(log.get_models_folder(), 'automl_effdet', 'savedmodeldir')
+  path_pb = os.path.join(PATH_PB, model_name)
   log.p('Loading EfficientDet from: {}'.format(path_pb))
-  graph = log.load_tf_graph(path_pb)
+  if is_saved_model:
+    graph = log.load_tf_graph_saved_model(path_pb)
+  else:
+    graph = log.load_tf_graph(path_pb)
 
   sess = tf.Session(graph=graph)
   tf_input = graph.get_tensor_by_name('image_arrays:0')

@@ -15,14 +15,9 @@ Copyright 2019 Lummetry.AI (Knowledge Investment Group SRL). All Rights Reserved
 @description:
 """
   
-import os
-os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 import torch as th
-import numpy as np
 import torchvision.models as models
 
-from time import time
-from libraries import Logger
 from lumm_pytorch import utils
 
 MOBILENET_V2 = 'mobilenetv2'
@@ -41,13 +36,12 @@ DEVICE = th.device('cuda:0' if th.cuda.is_available() else 'cpu')
 
 def get_th_model(model_name):
   if model_name == MOBILENET_V2:
-    model = models.mobilenet_v2()
+    model = models.mobilenet_v2(pretrained=True)
   elif model_name == INCEPTION_V3:
-    model = models.inception_v3()
+    model = models.inception_v3(pretrained=True)
   elif model_name == RESNET50:
-    model = models.resnet50()
-  model.to(DEVICE)
-  model.eval()
+    model = models.resnet50(pretrained=True)
+  model.eval().to(DEVICE)
   return model
 
 def to_onnx_model(log, model_name):
@@ -90,13 +84,7 @@ def load_onnx_model(log, model_name):
   log.p('Done', show_time=True)
   return model, ort_sess
 
-if __name__ == '__main__':  
-  log = Logger(
-    lib_name='BENCHMARK', 
-    config_file='config.txt', 
-    TF_KERAS=False
-    )
-    
+
 
   
   

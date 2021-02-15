@@ -16,7 +16,6 @@ Copyright 2019 Lummetry.AI (Knowledge Investment Group SRL). All Rights Reserved
 """
 
 import os
-import cv2
 import torch as th
 
 def export_onnx_model(model, input_shape, onnx_path, input_names=None, 

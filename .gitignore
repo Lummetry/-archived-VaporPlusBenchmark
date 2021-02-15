@@ -127,3 +127,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+#tf/th checkpoints
+*.pt
+*.pb

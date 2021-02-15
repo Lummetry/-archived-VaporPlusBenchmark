@@ -8,7 +8,6 @@ import os
 import sys
 sys.path.append(os.path.join(os.getcwd(), 'third_party', 'pytorch', 'yolov5'))
 import time
-import argparse
 
 import torch as th
 import torch.nn as nn
@@ -21,8 +20,6 @@ from libraries import Logger
 from lumm_pytorch.utils import create_onnx_model
 
 DEVICE = th.device('cuda:0' if th.cuda.is_available() else 'cpu')
-
-
 
 if __name__ == '__main__':  
   log = Logger(
