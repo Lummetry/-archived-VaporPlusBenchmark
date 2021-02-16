@@ -1,6 +1,5 @@
-import numpy as np
 import torch as th
-import tensorflow as tf
+import numpy as np
 
 from time import time
 from data import data_generator
@@ -24,7 +23,7 @@ def predict(predict_method, data_gen):
     start = time()
     preds = predict_method(np_batch)
     stop = time()
-    lst_time.append(stop - start)
+    lst_time.append((stop - start) / np_batch.shape[0])
     lst_preds.append(preds)
   return lst_preds, lst_time
 

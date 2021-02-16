@@ -14,7 +14,7 @@ Copyright 2019 Lummetry.AI (Knowledge Investment Group SRL). All Rights Reserved
 @project: 
 @description:
 """
-
+import multiprocessing
 import constants as ct
 
 from data import get_nr_batches, read_images, save_benchmark_results
@@ -68,7 +68,7 @@ if __name__ == '__main__':
     )
   log.set_nice_prints(df_precision=5)
 
-  BS = 1
+  BS = 6
   N_WP = 1
   N_IT = 1
   

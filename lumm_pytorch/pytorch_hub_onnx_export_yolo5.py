@@ -28,10 +28,10 @@ if __name__ == '__main__':
     TF_KERAS=False
     )
   
-  # weights = 'yolov5s.pt'
+  weights = 'yolov5s.pt'
   # weights = 'yolov5m.pt'
   # weights = 'yolov5l.pt'
-  weights = 'yolov5x.pt'
+  # weights = 'yolov5x.pt'
   img_size = [640, 640]
   batch_size = 1
   set_logging()

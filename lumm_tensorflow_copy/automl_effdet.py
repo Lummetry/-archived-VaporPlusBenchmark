@@ -54,12 +54,9 @@ sys.path.append(os.path.join(os.getcwd(), 'third_party', 'tensorflow', 'automl')
 sys.path.append(os.path.join(os.getcwd(), 'third_party', 'tensorflow', 'automl', 'efficientdet'))
 sys.path.append(os.path.join(os.getcwd(), 'third_party', 'tensorflow', 'automl', 'efficientdet', 'keras'))
 
-import numpy as np
-from PIL import Image
 import tensorflow.compat.v1 as tf
 
 import hparams_config
-import inference
 from keras import efficientdet_keras
 from libraries import Logger
 

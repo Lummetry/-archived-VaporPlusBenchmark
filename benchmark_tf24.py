@@ -22,35 +22,10 @@ from data import read_images
 # from lumm_tensorflow import benchmark_automl_effdet_keras, 
 # from lumm_pytorch import benchmark_pytorch_models_trt
 
-from lumm_pytorch import benchmark_pytorch_effdet_models, \
-  benchmark_pytorch_models, benchmark_pytorch_models_onnx,  \
-  benchmark_pytorch_hub_models, benchmark_pytorch_hub_models_onnx
-  
-from lumm_tensorflow import benchmark_automl_effdet_pb, benchmark_automl_effdet_trt, \
-  benchmark_keras_models, benchmark_keras_models_onnx, benchmark_keras_models_pb, benchmark_keras_models_trt, \
-  benchmark_vapor_graphs, benchmark_vapor_graphs_pb, benchmark_vapor_graphs_onnx, benchmark_vapor_graphs_trt
+from lumm_tensorflow import benchmark_automl_effdet_keras
 
 BENCHMARKS_TF23 = {
-    # ct.PYTORCH:           benchmark_pytorch_models,
-    # ct.PYTORCH_ONNX:      benchmark_pytorch_models_onnx,
-    
-    # ct.PYTORCH_EFFDET:    benchmark_pytorch_effdet_models,
-    
-    # ct.PYTORCH_HUB:       benchmark_pytorch_hub_models,
-    # ct.PYTORCH_HUB_ONNX:  benchmark_pytorch_hub_models_onnx,
-    
-    # ct.AUTOML_EFFDET_PB:  benchmark_automl_effdet_pb,
-    # ct.AUTOML_EFFDET_TRT: benchmark_automl_effdet_trt,
-    
-    # ct.KERAS:             benchmark_keras_models,
-    # ct.KERAS_PB:          benchmark_keras_models_pb,
-    # ct.KERAS_TRT:         benchmark_keras_models_trt,
-    # ct.KERAS_ONNX:        benchmark_keras_models_onnx,
-    
-    # ct.VAPOR_GRAPHS:      benchmark_vapor_graphs,
-    # ct.VAPOR_GRAPHS_PB:   benchmark_vapor_graphs_pb,
-    # ct.VAPOR_GRAPHS_TRT:  benchmark_vapor_graphs_trt,
-    # ct.VAPOR_GRAPHS_ONNX: benchmark_vapor_graphs_onnx
+    ct.AUTOML_EFFDET:  benchmark_automl_effdet_keras,
   }
 
 BATCH_SIZES = list([1] + list(range(2, 31, 2)))

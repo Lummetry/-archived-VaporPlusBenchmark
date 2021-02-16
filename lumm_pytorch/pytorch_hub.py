@@ -41,7 +41,7 @@ def get_pytorchhub_model(log, repo_or_dir, model_name):
     repo_or_dir=repo_or_dir, 
     model=model_name, 
     pretrained=True,
-    force_reload=True
+    # force_reload=True
     ).to(DEVICE)
   return model
 

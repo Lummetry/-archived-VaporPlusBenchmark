@@ -14,6 +14,10 @@ Copyright 2019 Lummetry.AI (Knowledge Investment Group SRL). All Rights Reserved
 @project: 
 @description:
 """
+import tensorflow.compat.v1 as tf
+gpu = tf.config.experimental.list_physical_devices('GPU')
+tf.config.experimental.set_memory_growth(gpu[0], True)
+tf.disable_eager_execution()
 import constants as ct
 
 from libraries import Logger
@@ -21,13 +25,15 @@ from data import read_images
 
 
 from lumm_pytorch import benchmark_pytorch_models_trt
+from lumm_tensorflow import benchmark_automl_effdet_trt
 
-BENCHMARKS_TF23 = {
+BENCHMARKS_TF23PY36 = {
     ct.PYTORCH_TRT:       benchmark_pytorch_models_trt,
+    # ct.AUTOML_EFFDET_TRT: benchmark_automl_effdet_trt
   }
 
-# BATCH_SIZES = list([1] + list(range(2, 31, 2)))
-BATCH_SIZES = [1]
+BATCH_SIZES = list([1] + list(range(2, 31, 2)))
+# BATCH_SIZES = [1]
 
 if __name__ == '__main__':
   log = Logger(
@@ -41,7 +47,7 @@ if __name__ == '__main__':
   
   np_imgs_bgr = read_images(log=log, folder=ct.DATA_FOLDER_GENERAL)
   for bs in BATCH_SIZES:
-    for key, benchmark_method in BENCHMARKS_TF23.items():
+    for key, benchmark_method in BENCHMARKS_TF23PY36.items():
       benchmark_method(
         log=log,
         np_imgs_bgr=np_imgs_bgr, 

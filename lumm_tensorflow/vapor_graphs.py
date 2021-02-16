@@ -56,10 +56,26 @@ if __name__ == '__main__':
     config_file='config.txt',
     TF_KERAS=False
     )
-  for batch_size in BATCH_SIZES:
-    get_vapor_graph(log=log, graph_name=EFF_DET0, batch_size=batch_size)
-    
+  # for batch_size in BATCH_SIZES:
+  #   get_vapor_graph(log=log, graph_name=EFF_DET0, batch_size=batch_size)
   
+  graph = get_vapor_graph(
+    log=log, 
+    graph_name=EFF_DET0, 
+    batch_size=18
+    )
+  
+  import constants as ct
+  from data import read_images
+  np_imgs_bgr = read_images(log=log, folder=ct.DATA_FOLDER_GENERAL)
+  
+  graph.predict(np_imgs_bgr)
+  
+  graph = get_vapor_graph(
+    log=log,
+    graph_name=TF_YOLO,
+    )
+  graph.predict(np_imgs_bgr)
   
   
   

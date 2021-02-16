@@ -20,10 +20,10 @@ Copyright 2019 Lummetry.AI (Knowledge Investment Group SRL). All Rights Reserved
 """
 
 import os
+import cv2
 import math
 import numpy as np
 import pandas as pd
-from PIL import Image
 
 def get_nr_batches(np_imgs, batch_size):
   nr_batches = int(math.ceil(np_imgs.shape[0] / batch_size))
@@ -35,14 +35,19 @@ def data_generator(np_imgs, batch_size):
     start = i * batch_size
     stop = (i + 1) * batch_size if i < nr_batches - 1 else np_imgs.shape[0]
     np_batch = np_imgs[start:stop]
+    #just to make sure that VaporEffDet is working properly
+    if np_batch.shape[0] < batch_size:
+      bs, h, w, c = np_batch.shape
+      np_batch = np.vstack([np_batch, np.repeat(np.expand_dims(np_batch[0], axis=0), batch_size-bs, axis=0)])
     yield np_batch
   return
+
 
 def read_images(log, folder):
   path_images = os.path.join(log.get_data_subfolder(folder))
   assert os.path.exists(path_images), 'Path does not exist: {}'.format(path_images)
   lst_imgs = [os.path.join(path_images, x) for x in os.listdir(path_images)]
-  lst_imgs = [np.array(Image.open(x)) for x in lst_imgs]
+  lst_imgs = [cv2.imread(x) for x in lst_imgs]
   np_imgs = np.array(lst_imgs)
   return np_imgs
 
