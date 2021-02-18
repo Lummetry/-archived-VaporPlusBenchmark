@@ -14,18 +14,20 @@ Copyright 2019 Lummetry.AI (Knowledge Investment Group SRL). All Rights Reserved
 @project: 
 @description:
 """
+import os
+import shutil
+import numpy as np
 import constants as ct
 
 from libraries import Logger
+from benchmark_methods import benchmark_tf_graph
 from lumm_tensorflow.keras import MODELS
 from lumm_tensorflow.utils import get_trt_graph
-from benchmark_methods import benchmark_tf_graph
-from data import get_nr_batches, read_images, save_benchmark_results
+from data import read_images, get_path_results
 
-def benchmark_keras_models_trt(log, np_imgs_bgr, batch_size, n_warmup, n_iters):
-  log.p('Benchmarking KerasModelTRT {} on image tensor: {}'.format(','.join(MODELS.keys()), np_imgs_bgr.shape))
-  
-  dct_times = {}
+def qualitative_benchmark_keras_models_pb(log, lst_paths, np_imgs_bgr, batch_size, n_warmup, n_iters):
+  log.p('Qualitative benchmarking KerasModels {} on image tensor: {}'.format(','.join(MODELS.keys()), np_imgs_bgr.shape))
+  dct_classes = log.load_json('imagenet_classes_json.txt', folder='data')
   for model_name, dct_opt in MODELS.items():
     try:
       graph, sess, tf_inp, tf_out = get_trt_graph(log, model_name + '.pb')
@@ -43,40 +45,53 @@ def benchmark_keras_models_trt(log, np_imgs_bgr, batch_size, n_warmup, n_iters):
         resize=dct_opt['RESIZE'],
         preprocess_input_fn=dct_opt['PREPROCESS'],
         )
-      dct_times[model_name] = lst_time
+      np_preds = np.array(preds).squeeze()
+      for i,pred in enumerate(np_preds):
+        path_src = lst_paths[i]
+        path_dst = get_path_results(log, batch_size=1, fn=os.path.join(ct.KERAS_TRT, ct.DATA_FOLDER_CLASSIFICATION, model_name))
+        os.makedirs(path_dst, exist_ok=True)
+        idx = np.argmax(pred, axis=-1)
+        lbl = dct_classes[idx][1]
+        shutil.copyfile(path_src, os.path.join(path_dst, lbl + '.png'))
+      #endfor
       del graph
       del sess
       log.clear_gpu_memory()
     except Exception as e:
       log.p('Exception on {}: {}'.format(model_name, str(e)))
-      dct_times[model_name] = [None] * get_nr_batches(np_imgs_bgr, batch_size)
   #endfor
-  
-  save_benchmark_results(
-    log=log, 
-    dct_times=dct_times, 
-    batch_size=batch_size,
-    fn=ct.KERAS_TRT
-    )
   return
- 
+
+#gasire landamrk
+#extracgere imagine
+#aplicare filtru de detectie de margine sau filtru de laplacian
+#verificare distanta de fiecare data cand vii cu o imagine noua
+
 if __name__ == '__main__':
   log = Logger(
     lib_name='BENCHMARK', 
     config_file='config.txt',
     TF_KERAS=False
     )
-
+  
   BS = 1
-  N_WP = 1
+  N_WP = 0
   N_IT = 1
   
-  np_imgs_bgr = read_images(log=log, folder=ct.DATA_FOLDER_GENERAL)
-  benchmark_keras_models_trt(
+  lst_preds = []
+  lst_paths, lst_imgs = read_images(log=log, folder=ct.DATA_FOLDER_CLASSIFICATION)
+  qualitative_benchmark_keras_models_trt(
     log=log,
-    np_imgs_bgr=np_imgs_bgr, 
-    batch_size=BS, 
-    n_warmup=N_WP, 
+    lst_paths=lst_paths,
+    np_imgs_bgr=lst_imgs,
+    batch_size=BS,
+    n_warmup=N_WP,
     n_iters=N_IT
     )
+
+
+  
+  
+  
+  
   

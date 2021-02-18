@@ -26,7 +26,7 @@ from data import get_nr_batches, read_images, save_benchmark_results
 def benchmark_keras_models_pb(log, np_imgs_bgr, batch_size, n_warmup, n_iters):
   log.p('Benchmarking KerasModelPB {} on image tensor: {}'.format(','.join(MODELS.keys()), np_imgs_bgr.shape))
   dct_times = {}
-  for model_name, resize in MODELS.items():
+  for model_name, dct_opt in MODELS.items():
     try:
       graph, sess, tf_inp, tf_out = get_pb(log, model_name)
       log.p('Benchmarking {}'.format(model_name))
@@ -40,7 +40,8 @@ def benchmark_keras_models_pb(log, np_imgs_bgr, batch_size, n_warmup, n_iters):
         n_warmup=n_warmup, 
         n_iters=n_iters,
         as_rgb=True,
-        resize=resize
+        resize=dct_opt['RESIZE'],
+        preprocess_input_fn=dct_opt['PREPROCESS'],
         )
       dct_times[model_name] = lst_time
       del graph

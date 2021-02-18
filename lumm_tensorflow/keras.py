@@ -15,15 +15,16 @@ Copyright 2019 Lummetry.AI (Knowledge Investment Group SRL). All Rights Reserved
 @description:
 """
 import tensorflow as tf
+from tensorflow.keras.applications import resnet, mobilenet_v2, inception_v3
 
 MOBILENET_V2 = 'mobilenetv2'
 INCEPTION_V3 = 'inceptionv3'
 RESNET50    = 'resnet50'
 
 MODELS = {
-  MOBILENET_V2: (224, 224),
-  INCEPTION_V3: (299, 299),
-  RESNET50: (224, 224)
+  MOBILENET_V2: {'RESIZE': (224, 224), 'PREPROCESS':  mobilenet_v2.preprocess_input},
+  INCEPTION_V3: {'RESIZE': (299, 299), 'PREPROCESS': inception_v3.preprocess_input},
+  RESNET50: {'RESIZE': (224, 224), 'PREPROCESS': resnet.preprocess_input}
   }
 
 def get_keras_model(model_name):

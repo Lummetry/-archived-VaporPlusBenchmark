@@ -6,11 +6,15 @@ from data import data_generator
 
 DEVICE = th.device('cuda:0' if th.cuda.is_available() else 'cpu')
 
-def prepare_data(log, np_batch, resize, as_rgb, to_nchw):
+def prepare_data(log, np_batch, resize, as_rgb, to_nchw, preprocess_input_fn, normalize):
   if resize:
     np_batch = np.array([log.center_image2(x, resize[0], resize[1]) for x in np_batch])
   if as_rgb:
     np_batch = np_batch[:,:,:,::-1]
+  if preprocess_input_fn:
+    np_batch = np.array([preprocess_input_fn(x) for x in np_batch])
+  if normalize:
+    np_batch = np_batch / 255
   if to_nchw:
     np_batch = np.transpose(np_batch, (0, 3, 1, 2))
   np_batch = np_batch.astype('float32')
@@ -23,21 +27,23 @@ def predict(predict_method, data_gen):
     start = time()
     preds = predict_method(np_batch)
     stop = time()
-    lst_time.append((stop - start) / np_batch.shape[0])
+    lst_time.append((stop - start) / len(np_batch))
     lst_preds.append(preds)
   return lst_preds, lst_time
 
 
 #TENSORFLOW
 def benchmark_keras_model(log, n_warmup, n_iters, model, np_imgs_bgr, batch_size, 
-                          as_rgb=False,  resize=None):
+                          as_rgb=False,  resize=None, preprocess_input_fn=None, normalize=False):
   def _predict_method(np_batch):
     np_batch = prepare_data(
       log=log,
       np_batch=np_batch,
       resize=resize,
       as_rgb=as_rgb,
-      to_nchw=False
+      to_nchw=False,
+      preprocess_input_fn=preprocess_input_fn,
+      normalize=normalize
       )
     preds = model.predict(np_batch)
     return preds
@@ -60,14 +66,15 @@ def benchmark_keras_model(log, n_warmup, n_iters, model, np_imgs_bgr, batch_size
 
 
 def benchmark_vapor_graph(log, n_warmup, n_iters, graph, np_imgs_bgr, batch_size, 
-                          as_rgb=False):
+                          as_rgb=False, normalize=False):
   def _predict_method(np_batch):
     np_batch = prepare_data(
       log=log,
       np_batch=np_batch,
       as_rgb=as_rgb,
       resize=None,
-      to_nchw=False
+      to_nchw=False,
+      normalize=normalize
       )
     return graph.predict(np_batch)
   
@@ -89,7 +96,8 @@ def benchmark_vapor_graph(log, n_warmup, n_iters, graph, np_imgs_bgr, batch_size
 
 
 def benchmark_tf_graph(log, n_warmup, n_iters, sess, tf_inp, tf_out, 
-                       np_imgs_bgr, batch_size, as_rgb=False, resize=None):
+                       np_imgs_bgr, batch_size, as_rgb=False, resize=None,
+                       preprocess_input_fn=None, normalize=False):
   #avoid collision with automl_effdet that requires eager execution
   import tensorflow.compat.v1 as tf
   tf.disable_eager_execution()
@@ -101,7 +109,8 @@ def benchmark_tf_graph(log, n_warmup, n_iters, sess, tf_inp, tf_out,
       np_batch=np_batch,
       as_rgb=as_rgb,
       resize=resize,
-      to_nchw=False
+      to_nchw=False,
+      normalize=normalize
       )
     out_scores = sess.run(
       tf_out,
@@ -128,14 +137,15 @@ def benchmark_tf_graph(log, n_warmup, n_iters, sess, tf_inp, tf_out,
 
 #PYTORCH
 def benchmark_pytorch_model(log, n_warmup, n_iters, model, np_imgs_bgr, batch_size, 
-                          as_rgb=False, resize=None, to_nchw=False):
+                          as_rgb=False, resize=None, to_nchw=False, normalize=False):
   def _predict_method(np_batch):
     np_batch = prepare_data(
       log=log,
       np_batch=np_batch,
       resize=resize,
       as_rgb=as_rgb,
-      to_nchw=to_nchw
+      to_nchw=to_nchw,
+      normalize=normalize
       )
     with th.no_grad():
       th_x = th.from_numpy(np_batch).to(DEVICE)
@@ -161,14 +171,15 @@ def benchmark_pytorch_model(log, n_warmup, n_iters, model, np_imgs_bgr, batch_si
 
 
 def benchmark_pytorch_effdet_model(log, n_warmup, n_iters, model, np_imgs_bgr, batch_size, 
-                                 as_rgb=False, to_nchw=False):
+                                 as_rgb=False, to_nchw=False, normalize=False):
   def _predict_method(np_batch):
     np_batch = prepare_data(
       log=log,
       np_batch=np_batch,
       resize=resize,
       as_rgb=as_rgb,
-      to_nchw=to_nchw
+      to_nchw=to_nchw,
+      normalize=normalize
       )
     with th.no_grad():
       th_x = th.from_numpy(np_batch).to(DEVICE)
@@ -216,14 +227,15 @@ def benchmark_pytorch_effdet_model(log, n_warmup, n_iters, model, np_imgs_bgr, b
 
 
 def benchmark_torch_hub_model(log, n_warmup, n_iters, model, np_imgs_bgr, batch_size, 
-                              as_rgb=False, resize=None, to_nchw=False):
+                              as_rgb=False, resize=None, to_nchw=False, normalize=False):
   def _predict_method(np_batch):
     np_batch = prepare_data(
       log=log,
       np_batch=np_batch,
       resize=resize,
       as_rgb=as_rgb,
-      to_nchw=to_nchw
+      to_nchw=to_nchw,
+      normalize=normalize
       )
     with th.no_grad():
       th_x = th.from_numpy(np_batch).to(DEVICE)
@@ -253,14 +265,16 @@ def benchmark_torch_hub_model(log, n_warmup, n_iters, model, np_imgs_bgr, batch_
 
 #TENSORFLOW / PYTORCH
 def benchmark_onnx_model(log, n_warmup, n_iters, ort_sess, input_name, np_imgs_bgr, 
-                         batch_size, as_rgb=False, resize=None, to_nchw=False):
+                         batch_size, as_rgb=False, resize=None, to_nchw=False,
+                         normalize=False):
   def _predict_method(np_batch):
     np_batch = prepare_data(
       log=log,
       np_batch=np_batch,
       resize=resize,
       as_rgb=as_rgb,
-      to_nchw=to_nchw
+      to_nchw=to_nchw,
+      normalize=normalize
       )
     preds = ort_sess.run(
       output_names=None, 

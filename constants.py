@@ -1,6 +1,8 @@
 
 
 DATA_FOLDER_GENERAL = 'General'
+DATA_FOLDER_CLASSIFICATION = 'Classification'
+DATA_FOLDER_DETECTION = 'Detection'
 
 VAPOR_GRAPHS = 'vapor_graphs'
 VAPOR_GRAPHS_PB = 'vapor_graphs_pb'
