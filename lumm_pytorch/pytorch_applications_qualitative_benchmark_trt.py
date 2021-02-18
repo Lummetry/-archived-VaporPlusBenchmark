@@ -16,46 +16,48 @@ Copyright 2019 Lummetry.AI (Knowledge Investment Group SRL). All Rights Reserved
 """
 import os
 import shutil
+import torch as th
 import numpy as np
 import constants as ct
 
 from libraries import Logger
-from benchmark_methods import benchmark_tf_graph
-from lumm_tensorflow.keras import MODELS
-from lumm_tensorflow.utils import get_trt_graph
-from data import read_images, get_path_results
+from torch2trt import TRTModule
+from data import get_path_results, read_images, save_benchmark_results
+from benchmark_methods import benchmark_pytorch_model
+from lumm_pytorch.pytorch_applications import MODELS
 
-def qualitative_benchmark_keras_models_trt(log, lst_paths, np_imgs_bgr, batch_size, n_warmup, n_iters, debug=False):
-  log.p('Qualitative benchmarking KerasModelsTRT {} on image tensor: {}'.format(','.join(MODELS.keys()), np_imgs_bgr.shape))
+def qualitative_benchmark_pytorch_models_trt(log, lst_paths, np_imgs_bgr, batch_size, n_warmup, n_iters, debug=False):
+  log.p('Qualitative benchmarking PyTorchTRT {} on image tensor: {}'.format(','.join(MODELS.keys()), np_imgs_bgr.shape))
   dct_classes = log.load_json('imagenet_classes_json.txt', folder='data')
   for model_name, dct_opt in MODELS.items():
     try:
-      graph, sess, tf_inp, tf_out = get_trt_graph(log, model_name + '.pb')
+      path_model = os.path.join(log.get_models_folder(), 'th_{}_trt.pth'.format(model_name))
+      model_trt = TRTModule()
+      model_trt.load_state_dict(th.load(path_model))
       log.p('Benchmarking {}'.format(model_name))
-      preds, lst_time = benchmark_tf_graph(
-        log=log, 
-        sess=sess, 
-        tf_inp=tf_inp,
-        tf_out=tf_out,
+      lst_preds, lst_time = benchmark_pytorch_model(
+        log=log,
+        model=model_trt, 
         np_imgs_bgr=np_imgs_bgr, 
         batch_size=batch_size, 
         n_warmup=n_warmup, 
         n_iters=n_iters,
         as_rgb=True,
-        resize=dct_opt['RESIZE'],
-        preprocess_input_fn=dct_opt['PREPROCESS'],
+        preprocess_input_fn=dct_opt['PREPROCESS']
         )
-      np_preds = np.array(preds).squeeze()
+
+      np_preds = np.array(lst_preds).squeeze()
       for i,pred in enumerate(np_preds):
         path_src = lst_paths[i]
-        path_dst = get_path_results(log, batch_size=1, fn=os.path.join(ct.KERAS_TRT, ct.DATA_FOLDER_CLASSIFICATION, model_name))
+        path_dst = get_path_results(log, batch_size=1, fn=os.path.join(ct.PYTORCH_TRT, 
+                                                                       ct.DATA_FOLDER_CLASSIFICATION, 
+                                                                       model_name))
         os.makedirs(path_dst, exist_ok=True)
         idx = np.argmax(pred, axis=-1)
         lbl = dct_classes[idx][1]
         shutil.copyfile(path_src, os.path.join(path_dst, lbl + '.png'))
       #endfor
-      del graph
-      del sess
+      del model_trt
       log.clear_gpu_memory()
     except Exception as e:
       log.p('Exception on {}: {}'.format(model_name, str(e)))
@@ -64,10 +66,6 @@ def qualitative_benchmark_keras_models_trt(log, lst_paths, np_imgs_bgr, batch_si
   #endfor
   return
 
-#gasire landamrk
-#extracgere imagine
-#aplicare filtru de detectie de margine sau filtru de laplacian
-#verificare distanta de fiecare data cand vii cu o imagine noua
 
 if __name__ == '__main__':
   log = Logger(
@@ -75,23 +73,25 @@ if __name__ == '__main__':
     config_file='config.txt',
     TF_KERAS=False
     )
-  
+  log.set_nice_prints(df_precision=5)
+
   BS = 1
   N_WP = 0
   N_IT = 1
   
-  lst_preds = []
   lst_paths, lst_imgs = read_images(log=log, folder=ct.DATA_FOLDER_CLASSIFICATION)
-  qualitative_benchmark_keras_models_trt(
+  qualitative_benchmark_pytorch_models_trt(
     log=log,
     lst_paths=lst_paths,
-    np_imgs_bgr=lst_imgs,
-    batch_size=BS,
-    n_warmup=N_WP,
+    np_imgs_bgr=lst_imgs, 
+    batch_size=BS, 
+    n_warmup=N_WP, 
     n_iters=N_IT,
     debug=True
     )
+  
+  
+  
+  
 
-  
-  
   

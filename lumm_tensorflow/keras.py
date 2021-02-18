@@ -22,9 +22,9 @@ INCEPTION_V3 = 'inceptionv3'
 RESNET50    = 'resnet50'
 
 MODELS = {
-  MOBILENET_V2: {'RESIZE': (224, 224), 'PREPROCESS':  mobilenet_v2.preprocess_input},
+  MOBILENET_V2: {'RESIZE': (224, 224), 'PREPROCESS': mobilenet_v2.preprocess_input},
   INCEPTION_V3: {'RESIZE': (299, 299), 'PREPROCESS': inception_v3.preprocess_input},
-  RESNET50: {'RESIZE': (224, 224), 'PREPROCESS': resnet.preprocess_input}
+  RESNET50:     {'RESIZE': (224, 224), 'PREPROCESS': resnet.preprocess_input}
   }
 
 def get_keras_model(model_name):

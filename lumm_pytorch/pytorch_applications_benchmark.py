@@ -25,7 +25,7 @@ from lumm_pytorch.pytorch_applications import MODELS, get_th_model
 def benchmark_pytorch_models(log, np_imgs_bgr, batch_size, n_warmup, n_iters):
   log.p('Benchmarking Pytorch {} on image tensor: {}'.format(','.join(MODELS.keys()), np_imgs_bgr.shape))
   dct_times = {}
-  for model_name, resize in MODELS.items():
+  for model_name, dct_opt in MODELS.items():
     try:
       model = get_th_model(model_name=model_name)
       log.p('Benchmarking {}'.format(model_name))
@@ -37,8 +37,7 @@ def benchmark_pytorch_models(log, np_imgs_bgr, batch_size, n_warmup, n_iters):
         n_warmup=n_warmup, 
         n_iters=n_iters,
         as_rgb=True,
-        resize=resize,
-        to_nchw=True
+        preprocess_input_fn=dct_opt['PREPROCESS']
         )
       dct_times[model_name] = lst_time
       del model

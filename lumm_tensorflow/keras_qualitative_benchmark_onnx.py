@@ -26,7 +26,7 @@ from benchmark_methods import benchmark_onnx_model
 from data import read_images, get_path_results
 
 def qualitative_benchmark_keras_models_onnx(log, lst_paths, np_imgs_bgr, batch_size, n_warmup, n_iters):
-  log.p('Qualitative benchmarking KerasModels {} on image tensor: {}'.format(','.join(MODELS.keys()), np_imgs_bgr.shape))
+  log.p('Qualitative benchmarking KerasModelsONNX {} on image tensor: {}'.format(','.join(MODELS.keys()), np_imgs_bgr.shape))
   dct_classes = log.load_json('imagenet_classes_json.txt', folder='data')
   for model_name, dct_opt in MODELS.items():
     try:

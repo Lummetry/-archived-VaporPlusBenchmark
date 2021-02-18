@@ -25,11 +25,11 @@ tf_runoptions = tf.RunOptions(report_tensor_allocations_upon_oom=True)
 
 from vapor_inference.graphs import YoloInferenceGraph, EfficientDet0InferenceGraph
 
-TF_YOLO = 'TF_YOLO'
-EFF_DET0 = 'EFF_DET0'
+TF_YOLO   = 'TF_YOLO'
+EFF_DET0  = 'EFF_DET0'
 
 GRAPHS = {
-  TF_YOLO: (608, 608), 
+  TF_YOLO:  (608, 608), 
   EFF_DET0: (574, 1020)
   }
 

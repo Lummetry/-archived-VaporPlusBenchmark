@@ -19,16 +19,42 @@ import torch as th
 import torchvision.models as models
 
 from lumm_pytorch import utils
+from torchvision import transforms
+
+preprocess_mobilenetv2 = transforms.Compose([
+  transforms.ToPILImage(),
+  transforms.Resize(256),
+  transforms.CenterCrop(224),
+  transforms.ToTensor(),
+  transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+])
+
+preprocess_inceptionv3 = transforms.Compose([
+  transforms.ToPILImage(),
+  transforms.Resize(299),
+  transforms.CenterCrop(299),
+  transforms.ToTensor(),
+  transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+])
+
+preprocess_resnet50 = transforms.Compose([
+  transforms.ToPILImage(),
+  transforms.Resize(256),
+  transforms.CenterCrop(224),
+  transforms.ToTensor(),
+  transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+])
 
 MOBILENET_V2 = 'mobilenetv2'
 INCEPTION_V3 = 'inceptionv3'
 RESNET50    = 'resnet50'
 
 MODELS = {
-  MOBILENET_V2: (224, 224),
-  INCEPTION_V3: (299, 299),
-  RESNET50: (299, 299)
+  MOBILENET_V2: {'RESIZE': (224, 224), 'PREPROCESS': preprocess_mobilenetv2},
+  INCEPTION_V3: {'RESIZE': (299, 299), 'PREPROCESS': preprocess_inceptionv3},
+  RESNET50:     {'RESIZE': (224, 224), 'PREPROCESS': preprocess_resnet50}
   }
+
 
 
 DEVICE = th.device('cuda:0' if th.cuda.is_available() else 'cpu')
@@ -48,7 +74,7 @@ def to_onnx_model(log, model_name):
   assert model_name in MODELS, 'Model {} not configured'.format(model_name)
   
   log.p('Converting {} to onnx'.format(model_name))  
-  resize = MODELS[model_name]
+  resize = MODELS[model_name]['RESIZE']
   height, width = resize
   input_shape = (1, 3, height, width) #random number for batch_size. the batch_size will be made dynamic
   
@@ -73,7 +99,7 @@ def to_onnx_model(log, model_name):
 
 def load_onnx_model(log, model_name):
   log.p('Loading onnx model...')
-  resize = MODELS[model_name]
+  resize = MODELS[model_name]['RESIZE']
   height, width = resize
   onnx_model_name = model_name + '_fixed_{}'.format('x'.join(str(x) for x in resize)) + '.onnx'
   model, ort_sess = utils.load_onnx_model(
@@ -87,8 +113,7 @@ def load_onnx_model(log, model_name):
 
 
   
-  
-  
+
   
   
   

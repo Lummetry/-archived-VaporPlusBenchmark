@@ -6,19 +6,29 @@ from data import data_generator
 
 DEVICE = th.device('cuda:0' if th.cuda.is_available() else 'cpu')
 
-def prepare_data(log, np_batch, resize, as_rgb, to_nchw, preprocess_input_fn, normalize):
+def prepare_data(log, np_batch, resize, as_rgb, to_nchw, 
+                 preprocess_input_fn=None, normalize=False):
+  batch = np_batch
   if resize:
-    np_batch = np.array([log.center_image2(x, resize[0], resize[1]) for x in np_batch])
+    batch = np.array([log.center_image2(x, resize[0], resize[1]) for x in batch])
   if as_rgb:
-    np_batch = np_batch[:,:,:,::-1]
+    batch = np.array([x[:,:,::-1] for x in batch])
   if preprocess_input_fn:
-    np_batch = np.array([preprocess_input_fn(x) for x in np_batch])
+    lst = [preprocess_input_fn(x) for x in batch]
+    if isinstance(lst[0], (np.ndarray)):
+      batch = np.array(lst)
+    elif isinstance(lst[0], (th.Tensor)):
+      batch = [x.unsqueeze(0) for x in lst]
+      batch = th.cat(batch, axis=0)
   if normalize:
-    np_batch = np_batch / 255
+    batch = batch / 255
   if to_nchw:
-    np_batch = np.transpose(np_batch, (0, 3, 1, 2))
-  np_batch = np_batch.astype('float32')
-  return np_batch
+    batch = np.transpose(batch, (0, 3, 1, 2))
+  if isinstance(batch, np.ndarray):
+    batch = batch.astype('float32')
+  elif isinstance(batch, th.Tensor):
+    batch = batch.type(th.float32)
+  return batch
 
 def predict(predict_method, data_gen):  
   lst_time = []
@@ -34,7 +44,7 @@ def predict(predict_method, data_gen):
 
 #TENSORFLOW
 def benchmark_keras_model(log, n_warmup, n_iters, model, np_imgs_bgr, batch_size, 
-                          as_rgb=False,  resize=None, preprocess_input_fn=None, normalize=False):
+                          as_rgb=False, resize=None, preprocess_input_fn=None, normalize=False):
   def _predict_method(np_batch):
     np_batch = prepare_data(
       log=log,
@@ -138,18 +148,21 @@ def benchmark_tf_graph(log, n_warmup, n_iters, sess, tf_inp, tf_out,
 
 #PYTORCH
 def benchmark_pytorch_model(log, n_warmup, n_iters, model, np_imgs_bgr, batch_size, 
-                          as_rgb=False, resize=None, to_nchw=False, normalize=False):
+                          as_rgb=False, resize=None, to_nchw=False, preprocess_input_fn=None, normalize=False):
   def _predict_method(np_batch):
-    np_batch = prepare_data(
+    batch = prepare_data(
       log=log,
       np_batch=np_batch,
       resize=resize,
       as_rgb=as_rgb,
       to_nchw=to_nchw,
+      preprocess_input_fn=preprocess_input_fn,
       normalize=normalize
       )
     with th.no_grad():
-      th_x = th.from_numpy(np_batch).to(DEVICE)
+      if isinstance(batch, np.ndarray):
+        th_x = th.from_numpy(batch).to(DEVICE)
+      th_x = batch.to(DEVICE)
       preds = model(th_x).cpu().numpy()
     return preds
   
@@ -278,6 +291,8 @@ def benchmark_onnx_model(log, n_warmup, n_iters, ort_sess, input_name, np_imgs_b
       preprocess_input_fn=preprocess_input_fn,
       normalize=normalize
       )
+    if isinstance(np_batch, th.Tensor):
+      np_batch = np.array(np_batch)
     preds = ort_sess.run(
       output_names=None, 
       input_feed={input_name: np_batch}

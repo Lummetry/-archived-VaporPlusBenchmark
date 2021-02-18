@@ -61,11 +61,11 @@ def get_path_results(log, batch_size, fn):
   path = os.path.join(path, fn)
   return path
 
-def save_benchmark_results(log, dct_times, batch_size, fn):
+def save_results(log, dct, batch_size, fn):
   path = get_path_results(log, batch_size, fn)
-  os.makedirs(path, exist_ok=True)
-  path = os.path.join(path, '{}_{}.csv'.format(log.now_str(), fn))
-  df = pd.DataFrame(dct_times)
+  path = os.path.join(path, '{}.csv'.format(log.now_str()))
+  os.makedirs(os.path.split(path)[0], exist_ok=True)
+  df = pd.DataFrame(dct)
   log.p('\n\n{}'.format(df))
   log.save_dataframe(
     df=df,
@@ -73,3 +73,12 @@ def save_benchmark_results(log, dct_times, batch_size, fn):
     full_path=True
     )
   return df
+
+def save_benchmark_results(log, dct_times, batch_size, fn):
+  df = save_results(log=log, dct=dct_times, batch_size=batch_size, fn=fn)
+  return df
+
+def save_quality_results(log, dct_detections, batch_size, fn):
+  df = save_results(log=log, dct=dct_detections, batch_size=batch_size, fn=fn)
+  return df
+

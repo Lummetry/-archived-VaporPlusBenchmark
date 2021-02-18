@@ -28,7 +28,7 @@ from lumm_pytorch.pytorch_applications import MODELS
 def benchmark_pytorch_models_trt(log, np_imgs_bgr, batch_size, n_warmup, n_iters):
   log.p('Benchmarking PytorchTRT {} on image tensor: {}'.format(','.join(MODELS.keys()), np_imgs_bgr.shape))
   dct_times = {}
-  for model_name, resize in MODELS.items():
+  for model_name, dct_opt in MODELS.items():
     try:
       path_model = os.path.join(log.get_models_folder(), 'th_{}_trt.pth'.format(model_name))
       model_trt = TRTModule()
@@ -42,8 +42,7 @@ def benchmark_pytorch_models_trt(log, np_imgs_bgr, batch_size, n_warmup, n_iters
         n_warmup=n_warmup, 
         n_iters=n_iters,
         as_rgb=True,
-        resize=resize,
-        to_nchw=True
+        preprocess_input_fn=dct_opt['PREPROCESS']
         )
       dct_times[model_name] = lst_time
       del model_trt

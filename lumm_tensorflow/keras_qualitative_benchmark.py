@@ -42,7 +42,6 @@ def qualitative_benchmark_keras_models(log, lst_paths, np_imgs_bgr, batch_size, 
         as_rgb=True,
         resize=dct_opt['RESIZE'],
         preprocess_input_fn=dct_opt['PREPROCESS'],
-        normalize=False
         )
       np_preds = np.array(preds).squeeze()
       for i,pred in enumerate(np_preds):
