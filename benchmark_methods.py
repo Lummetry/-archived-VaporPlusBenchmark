@@ -110,7 +110,8 @@ def benchmark_tf_graph(log, n_warmup, n_iters, sess, tf_inp, tf_out,
       as_rgb=as_rgb,
       resize=resize,
       to_nchw=False,
-      normalize=normalize
+      normalize=normalize,
+      preprocess_input_fn=preprocess_input_fn
       )
     out_scores = sess.run(
       tf_out,
@@ -266,7 +267,7 @@ def benchmark_torch_hub_model(log, n_warmup, n_iters, model, np_imgs_bgr, batch_
 #TENSORFLOW / PYTORCH
 def benchmark_onnx_model(log, n_warmup, n_iters, ort_sess, input_name, np_imgs_bgr, 
                          batch_size, as_rgb=False, resize=None, to_nchw=False,
-                         normalize=False):
+                         preprocess_input_fn=None, normalize=False):
   def _predict_method(np_batch):
     np_batch = prepare_data(
       log=log,
@@ -274,6 +275,7 @@ def benchmark_onnx_model(log, n_warmup, n_iters, ort_sess, input_name, np_imgs_b
       resize=resize,
       as_rgb=as_rgb,
       to_nchw=to_nchw,
+      preprocess_input_fn=preprocess_input_fn,
       normalize=normalize
       )
     preds = ort_sess.run(
